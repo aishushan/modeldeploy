@@ -1,7 +1,10 @@
 import streamlit as st
 import numpy as np
 import librosa
+from tensorflow import keras
 
+# Load the model
+loaded_model = keras.models.load_model('trained_model.pkl')
 # Function to predict emotion
 def predict_emotion(wav_file_name):
     # Extract MFCC features from the audio file
