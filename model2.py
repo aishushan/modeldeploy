@@ -2,12 +2,18 @@ import streamlit as st
 import numpy as np
 import librosa
 from keras.models import load_model
+from sklearn.preprocessing import StandardScaler
 
 # Load the pre-trained model
 model = load_model('samplemodel.h5')
 
+# Load the scaler
+scaler = StandardScaler()
+scaler.mean_ = np.load('scaler_mean.npy')
+scaler.scale_ = np.load('scaler_scale.npy')
+
 # Function to extract MFCC features from an audio file
-def extract_mfcc(wav_file_name, scaler, state):
+def extract_mfcc(wav_file_name, scaler):
     y, sr = librosa.load(wav_file_name)
     mfccs = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T, axis=0)
     chroma = np.mean(librosa.feature.chroma_stft(y=y, sr=sr).T, axis=0)
@@ -27,9 +33,8 @@ audio_file = st.file_uploader("Upload an audio file (WAV format)", type=["wav"])
 
 if audio_file is not None:
     try:
-        state = None  # Initialize the state variable
         # Extract MFCC features
-        audio_features = extract_mfcc(audio_file, scaler, state)
+        audio_features = extract_mfcc(audio_file, scaler)
 
         # Make predictions using the trained model
         predicted_class = np.argmax(model.predict(audio_features), axis=-1)
