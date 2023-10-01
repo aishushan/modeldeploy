@@ -4,6 +4,17 @@ import librosa
 from sklearn.preprocessing import StandardScaler
 from keras.models import load_model
 
+# Load the pre-trained model
+model = load_model('samplemodel.h5')
+
+# Define a Streamlit SessionState to persist the scaler
+class SessionState:
+    def __init__(self):
+        self.scaler = None
+
+# Initialize the session state
+state = SessionState()
+
 # Function to define and load the scaler
 def load_scaler():
     scaler = StandardScaler()
@@ -25,33 +36,27 @@ def extract_mfcc(wav_file_name, scaler):
     return audio_features
 
 # Streamlit UI
-def main():
-    st.title('Emotion Identification from Audio')
+st.title('Emotion Identification from Audio')
 
-    # Upload an audio file
-    audio_file = st.file_uploader("Upload an audio file (WAV format)", type=["wav"])
+# Upload an audio file
+audio_file = st.file_uploader("Upload an audio file (WAV format)", type=["wav"])
 
-    if audio_file is not None:
-        try:
-            # Load the scaler
-            scaler = load_scaler()
+if audio_file is not None:
+    try:
+        # Load the scaler if not already loaded
+        if state.scaler is None:
+            state.scaler = load_scaler()
 
-            # Extract MFCC features
-            audio_features = extract_mfcc(audio_file, scaler)
+        # Extract MFCC features
+        audio_features = extract_mfcc(audio_file, state.scaler)
 
-            # Load the pre-trained model
-            model = load_model('samplemodel.h5')
+        # Make predictions using the trained model
+        predicted_class = np.argmax(model.predict(audio_features), axis=-1)
 
-            # Make predictions using the trained model
-            predicted_class = np.argmax(model.predict(audio_features), axis=-1)
+        # Map the predicted class back to an emotion label
+        emotion_labels = ["neutral", "happy", "sad", "angry", "fear", "disgust", "surprise"]
+        predicted_emotion = emotion_labels[predicted_class[0]]
 
-            # Map the predicted class back to an emotion label
-            emotion_labels = ["neutral", "happy", "sad", "angry", "fear", "disgust", "surprise"]
-            predicted_emotion = emotion_labels[predicted_class[0]]
-
-            st.success(f"Predicted emotion: {predicted_emotion}")
-        except Exception as e:
-            st.error(f"Error processing audio: {e}")
-
-if __name__ == '__main__':
-    main()
+        st.success(f"Predicted emotion: {predicted_emotion}")
+    except Exception as e:
+        st.error(f"Error processing audio: {e}")
