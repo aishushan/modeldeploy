@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import librosa
 from keras.models import load_model
+import os
 
 # Check if the model file exists
 model_file_path = 'samplemodel.h5'
