@@ -28,7 +28,7 @@ else:
 
             # Map the predicted class back to an emotion label
             emotion_labels = ["neutral", "happy", "sad", "angry", "fear", "disgust", "surprise"]
-            predicted_emotion = emotion_labels[predicted_class[0]]
+            predicted_emotion = emotion_labels[predicted_class[1]]
 
             return predicted_emotion
 
