@@ -4,7 +4,7 @@ import librosa
 from tensorflow import keras
 
 # Load the model
-loaded_model = keras.models.load_model('trained_model.pkl')
+loaded_model = keras.models.load_model('trained_model1.h5')
 # Function to predict emotion
 def predict_emotion(wav_file_name):
     # Extract MFCC features from the audio file
