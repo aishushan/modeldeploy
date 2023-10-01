@@ -11,6 +11,14 @@ model = load_model('samplemodel.h5')
 scaler = StandardScaler()
 scaler.mean_ = np.load('scaler_mean.npy')
 scaler.scale_ = np.load('scaler_scale.npy')
+# After fitting the scaler on your training data
+scaler_mean = scaler.mean_
+scaler_scale = scaler.scale_
+
+# Save the mean and scale values to files
+np.save('scaler_mean.npy', scaler_mean)
+np.save('scaler_scale.npy', scaler_scale)
+
 
 # Function to extract MFCC features from an audio file
 def extract_mfcc(wav_file_name):
