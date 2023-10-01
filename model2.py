@@ -7,6 +7,11 @@ from keras.models import load_model
 # Load the pre-trained model
 model = load_model('samplemodel.h5')
 
+# Load the scaler that was fitted on your training data
+scaler = StandardScaler()
+scaler.mean_ = np.load('scaler_mean.npy')
+scaler.scale_ = np.load('scaler_scale.npy')
+
 # Function to extract MFCC features from an audio file
 def extract_mfcc(wav_file_name):
     y, sr = librosa.load(wav_file_name)
@@ -14,9 +19,6 @@ def extract_mfcc(wav_file_name):
     chroma = np.mean(librosa.feature.chroma_stft(y=y, sr=sr).T, axis=0)
     mel = np.mean(librosa.feature.melspectrogram(y=y, sr=sr).T, axis=0)
     return np.hstack((mfccs, chroma, mel))
-
-# Normalize the data (standardize)
-scaler = StandardScaler()
 
 # Streamlit UI
 st.title('Emotion Identification from Audio')
@@ -30,7 +32,7 @@ if audio_file is not None:
         # Extract MFCC features
         audio_features = extract_mfcc(audio_file)
 
-        # Normalize the features using the same scaler used during training
+        # Normalize the features using the same scaler fitted on training data
         audio_features = scaler.transform(audio_features.reshape(1, -1))
 
         # Make predictions using the trained model
