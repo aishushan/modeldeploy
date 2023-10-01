@@ -1,18 +1,17 @@
 import streamlit as st
 import numpy as np
 import librosa
-import pickle
-import os
+from keras.models import load_model
 
 # Check if the model file exists
-model_file_path = 'trained_model1.h5'
+model_file_path = 'samplemodel.h5'
 
 if not os.path.exists(model_file_path):
     st.error(f"Model file '{model_file_path}' not found.")
 else:
     # Load the trained model
     try:
-        model = pickle.load(open(model_file_path, 'rb'))
+        loaded_model = load_model(model_file_path)
 
         # Function to predict emotion
         def predict_emotion(wav_file_name):
@@ -24,7 +23,7 @@ else:
             features = np.hstack((mfccs, chroma, mel))
 
             # Make predictions using the trained model
-            predicted_class = np.argmax(model.predict(features.reshape(1, -1)), axis=-1)
+            predicted_class = np.argmax(loaded_model.predict(features.reshape(1, -1)), axis=-1)
 
             # Map the predicted class back to an emotion label
             emotion_labels = ["neutral", "happy", "sad", "angry", "fear", "disgust", "surprise"]
@@ -43,6 +42,6 @@ else:
             st.audio(audio_file)
             predicted_emotion = predict_emotion(audio_file)
             st.write(f"Predicted emotion: {predicted_emotion}")
-    
+
     except Exception as e:
         st.error(f"An error occurred: {e}")
