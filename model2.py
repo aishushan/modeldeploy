@@ -8,15 +8,12 @@ from keras.models import load_model
 model = load_model('samplemodel.h5')
 
 # Function to extract MFCC features from an audio file
-def extract_mfcc(wav_file_name, scaler):
+def extract_mfcc(wav_file_name):
     y, sr = librosa.load(wav_file_name)
     mfccs = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T, axis=0)
     chroma = np.mean(librosa.feature.chroma_stft(y=y, sr=sr).T, axis=0)
     mel = np.mean(librosa.feature.melspectrogram(y=y, sr=sr).T, axis=0)
-    audio_features = np.hstack((mfccs, chroma, mel))
-    # Normalize the features using the provided scaler
-    audio_features = scaler.transform(audio_features.reshape(1, -1))
-    return audio_features
+    return np.hstack((mfccs, chroma, mel))
 
 # Streamlit UI
 st.title('Emotion Identification from Audio')
@@ -25,15 +22,18 @@ st.title('Emotion Identification from Audio')
 audio_file = st.file_uploader("Upload an audio file (WAV format)", type=["wav"])
 
 if audio_file is not None:
-    # Create and fit the scaler on a small dummy data to obtain mean and scale values
-    dummy_data = np.random.rand(1, 180)  # Assuming your data has 180 features
+    # Load the scaler that was fitted on your training data
     scaler = StandardScaler()
-    scaler.fit(dummy_data)  # Fit the scaler on the dummy data
-    
+    scaler.mean_ = np.load('scaler_mean.npy')
+    scaler.scale_ = np.load('scaler_scale.npy')
+
     # Perform emotion prediction when an audio file is uploaded
     try:
-        # Extract MFCC features and normalize using the scaler
-        audio_features = extract_mfcc(audio_file, scaler)
+        # Extract MFCC features
+        audio_features = extract_mfcc(audio_file)
+
+        # Normalize the features using the same scaler fitted on training data
+        audio_features = scaler.transform(audio_features.reshape(1, -1))
 
         # Make predictions using the trained model
         predicted_class = np.argmax(model.predict(audio_features), axis=-1)
