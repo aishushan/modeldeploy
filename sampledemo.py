@@ -6,7 +6,7 @@ import librosa
 import pickle
 
 # Load the trained model
-model = pickle.load(open('trained_model.h5', 'rb'))
+model = pickle.load(open('trained_model.pkl', 'rb'))
 
 # Function to predict emotion
 def predict_emotion(wav_file_name):
