@@ -5,7 +5,7 @@ import pickle
 import os
 
 # Check if the model file exists
-model_file_path = 'D:/deploy/trained_model1.h5'
+model_file_path = 'trained_model1.h5'
 
 if not os.path.exists(model_file_path):
     st.error(f"Model file '{model_file_path}' not found.")
