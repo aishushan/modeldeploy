@@ -21,7 +21,7 @@ else:
             mfccs = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T, axis=0)
             chroma = np.mean(librosa.feature.chroma_stft(y=y, sr=sr).T, axis=0)
             mel = np.mean(librosa.feature.melspectrogram(y=y, sr=sr).T, axis=0)
-            features = np.hstack((mfccs, chroma, mel))
+            features = np.hstack((mfccs))
 
             # Make predictions using the trained model
             predicted_class = np.argmax(loaded_model.predict(features.reshape(1, -1)), axis=-1)
