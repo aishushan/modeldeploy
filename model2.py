@@ -18,8 +18,8 @@ state = SessionState()
 # Function to define and load the scaler
 def load_scaler():
     scaler = StandardScaler()
-    scaler.mean_ = np.load('samplemodel.npy')
-    scaler.scale_ = np.load('samplemodel.npy')
+    scaler.mean_ = np.load('model2.py')
+    scaler.scale_ = np.load('model2.py')
     return scaler
 
 # Function to extract MFCC features from an audio file
